@@ -2,9 +2,11 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:intl/intl.dart' as intl;
+import 'package:pluto_grid/src/helper/woli_syncfusion_date_picker.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
-typedef SetFilterPopupHandler = void Function(
-    PlutoGridStateManager? stateManager);
+typedef SetFilterPopupHandler = void Function(PlutoGridStateManager? stateManager);
 
 class FilterHelper {
   /// A value to identify all column searches when searching filters.
@@ -31,6 +33,8 @@ class FilterHelper {
     PlutoFilterTypeGreaterThanOrEqualTo(),
     PlutoFilterTypeLessThan(),
     PlutoFilterTypeLessThanOrEqualTo(),
+    PlutoFilterTypeSingleDate(),
+    PlutoFilterTypeDateRange(),
   ];
 
   /// Create a row to contain filter information.
@@ -41,10 +45,8 @@ class FilterHelper {
   }) {
     return PlutoRow(
       cells: {
-        filterFieldColumn:
-            PlutoCell(value: columnField ?? filterFieldAllColumns),
-        filterFieldType:
-            PlutoCell(value: filterType ?? const PlutoFilterTypeContains()),
+        filterFieldColumn: PlutoCell(value: columnField ?? filterFieldAllColumns),
+        filterFieldType: PlutoCell(value: filterType ?? const PlutoFilterTypeContains()),
         filterFieldValue: PlutoCell(value: filterValue ?? ''),
       },
     );
@@ -97,8 +99,7 @@ class FilterHelper {
               flag,
               compareByFilterType(
                 filterType: filterType!,
-                base: row!.cells[e.cells[filterFieldColumn]!.value]!.value
-                    .toString(),
+                base: row!.cells[e.cells[filterFieldColumn]!.value]!.value.toString(),
                 search: e.cells[filterFieldValue]!.value.toString(),
                 column: foundColumn,
               ),
@@ -139,9 +140,7 @@ class FilterHelper {
         columnField = allField;
       }
 
-      final String filterType =
-          (row.cells[FilterHelper.filterFieldType]!.value as PlutoFilterType)
-              .title;
+      final String filterType = (row.cells[FilterHelper.filterFieldType]!.value as PlutoFilterType).title;
 
       final filterValue = row.cells[FilterHelper.filterFieldValue]!.value;
 
@@ -171,8 +170,7 @@ class FilterHelper {
     }
 
     for (var row in filteredRows) {
-      if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns ||
-          row.cells[filterFieldColumn]!.value == column.field) {
+      if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns || row.cells[filterFieldColumn]!.value == column.field) {
         return true;
       }
     }
@@ -183,7 +181,7 @@ class FilterHelper {
   /// Opens a pop-up for filtering.
   static void filterPopup(FilterPopupState popupState) {
     PlutoGridPopup(
-      width: popupState.width,
+      width: popupState.width + 50,
       height: popupState.height,
       context: popupState.context,
       createHeader: popupState.createHeader,
@@ -333,6 +331,22 @@ class FilterHelper {
       caseSensitive: caseSensitive,
     ).hasMatch(value);
   }
+
+  static bool compareSingleDate({
+    required String? base,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    return column.type.compare(base, search) == 1;
+  }
+
+  static bool compareDateRange({
+    required String? base,
+    required String? search,
+    required PlutoColumn column,
+  }) {
+    return column.type.compare(base, search) == 1;
+  }
 }
 
 /// State for calling filter pop
@@ -447,8 +461,7 @@ class FilterPopupState {
     required List<PlutoColumn> columns,
   }) {
     Map<String, String> columnMap = {
-      FilterHelper.filterFieldAllColumns:
-          configuration.localeText.filterAllColumns,
+      FilterHelper.filterFieldAllColumns: configuration.localeText.filterAllColumns,
     };
 
     columns.where((element) => element.enableFilterMenuItem).forEach((element) {
@@ -489,10 +502,57 @@ class FilterPopupState {
         },
       ),
       PlutoColumn(
-        title: configuration.localeText.filterValue,
+        width: 250,
+        title: FilterHelper.filterFieldType.toString(),
         field: FilterHelper.filterFieldValue,
-        type: PlutoColumnType.text(),
+        type: FilterHelper.filterFieldType == "Date range" ? PlutoColumnType.date() : PlutoColumnType.text(),
         enableFilterMenuItem: false,
+        renderer: (rendererContext) {
+          PickerDateRange? dateCreated;
+          return Row(
+            children: [
+              Text(rendererContext.row.cells['value']!.value),
+              if (rendererContext.row.cells['type']!.value.title == "Single date" || rendererContext.row.cells['type']!.value.title == "Date range")
+                IconButton(
+                  icon: const Icon(
+                    Icons.calendar_today,
+                  ),
+                  onPressed: () {
+                    bool singleCheck = rendererContext.row.cells['type']!.value.title == "Single date" ? false : true;
+                    //PlutoGridDatePicker(context: context, dateFormat: intl.DateFormat('dd/MM/YYYY'), headerDateFormat: intl.DateFormat('dd/MM/YYYY'));
+                    showDialog(
+                      context: context,
+                      builder: (
+                        BuildContext context,
+                      ) =>
+                          Dialog(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0.0,
+                        backgroundColor: Colors.transparent,
+                        child: CustomDateRangeSelector(
+                          hintText: 'Created At',
+                          isMultiple: singleCheck,
+                          onChanged: (PickerDateRange? value) {
+                            if (!singleCheck) {
+                              rendererContext.row.cells['value']!.value = intl.DateFormat("yyyy-MM-dd").format(value!.startDate!);
+                            } else {
+                              rendererContext.row.cells['value']!.value =
+                                  '${intl.DateFormat("yyyy-MM-dd").format(value!.startDate!)} / ${intl.DateFormat("yyyy-MM-dd").format(value.endDate!)}';
+                            }
+                          },
+                          initialSelectedRange: dateCreated,
+                        ),
+                      ),
+                    );
+                  },
+                  iconSize: 18,
+                  color: Colors.red,
+                ),
+            ],
+          );
+        },
       ),
     ];
   }
@@ -668,4 +728,28 @@ class PlutoFilterTypeLessThanOrEqualTo implements PlutoFilterType {
   PlutoCompareFunction get compare => FilterHelper.compareLessThanOrEqualTo;
 
   const PlutoFilterTypeLessThanOrEqualTo();
+}
+
+class PlutoFilterTypeSingleDate implements PlutoFilterType {
+  static String name = 'Single date';
+
+  @override
+  String get title => PlutoFilterTypeSingleDate.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareSingleDate;
+
+  const PlutoFilterTypeSingleDate();
+}
+
+class PlutoFilterTypeDateRange implements PlutoFilterType {
+  static String name = 'Date range';
+
+  @override
+  String get title => PlutoFilterTypeDateRange.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareDateRange;
+
+  const PlutoFilterTypeDateRange();
 }
