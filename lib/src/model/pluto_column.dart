@@ -3,11 +3,9 @@ import 'package:pluto_grid/pluto_grid.dart';
 
 typedef PlutoColumnValueFormatter = String Function(dynamic value);
 
-typedef PlutoColumnRenderer = Widget Function(
-    PlutoColumnRendererContext rendererContext);
+typedef PlutoColumnRenderer = Widget Function(PlutoColumnRendererContext rendererContext);
 
-typedef PlutoColumnFooterRenderer = Widget Function(
-    PlutoColumnFooterRendererContext context);
+typedef PlutoColumnFooterRenderer = Widget Function(PlutoColumnFooterRendererContext context);
 
 /// It dynamically determines whether the cells of the column are in the edit state.
 ///
@@ -39,6 +37,8 @@ class PlutoColumn {
   double width;
 
   double minWidth;
+
+  List<String> dropDownData;
 
   /// Customisable title padding.
   /// It takes precedence over defaultColumnTitlePadding in PlutoGridConfiguration.
@@ -226,6 +226,7 @@ class PlutoColumn {
     this.enableAutoEditing = false,
     this.enableEditingMode = true,
     this.hide = false,
+    this.dropDownData = const [],
   })  : _key = UniqueKey(),
         _checkReadOnly = checkReadOnly;
 
@@ -247,11 +248,9 @@ class PlutoColumn {
 
   PlutoFilterType? _defaultFilter;
 
-  PlutoFilterType get defaultFilter =>
-      _defaultFilter ?? const PlutoFilterTypeContains();
+  PlutoFilterType get defaultFilter => _defaultFilter ?? const PlutoFilterTypeContains();
 
-  bool get isShowRightIcon =>
-      enableContextMenu || enableDropToResize || !sort.isNone;
+  bool get isShowRightIcon => enableContextMenu || enableDropToResize || !sort.isNone;
 
   PlutoColumnGroup? group;
 
@@ -315,16 +314,12 @@ class PlutoColumn {
     if (type is PlutoColumnTypeWithNumberFormat) {
       return value.toString().replaceFirst(
             '.',
-            (type as PlutoColumnTypeWithNumberFormat)
-                .numberFormat
-                .symbols
-                .DECIMAL_SEP,
+            (type as PlutoColumnTypeWithNumberFormat).numberFormat.symbols.DECIMAL_SEP,
           );
     }
 
     if (formatter != null) {
-      final bool allowFormatting =
-          readOnly || type.isSelect || type.isTime || type.isDate;
+      final bool allowFormatting = readOnly || type.isSelect || type.isTime || type.isDate;
 
       if (applyFormatterInEditing && allowFormatting) {
         return formatter!(value).toString();
