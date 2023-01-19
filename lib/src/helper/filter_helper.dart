@@ -35,6 +35,7 @@ class FilterHelper {
     PlutoFilterTypeLessThanOrEqualTo(),
     PlutoFilterTypeSingleDate(),
     PlutoFilterTypeDateRange(),
+    PlutoFilterTypeWoliPreset(),
   ];
 
   /// Create a row to contain filter information.
@@ -378,6 +379,8 @@ class FilterPopupState {
   /// Height of filter popup
   final double height;
 
+  final List<Map<dynamic, Object>> dropDown;
+
   final void Function()? onClosed;
 
   FilterPopupState({
@@ -391,11 +394,14 @@ class FilterPopupState {
     this.width = 600,
     this.height = 450,
     this.onClosed,
+    required this.dropDown,
   })  : assert(columns.isNotEmpty),
         _previousFilterRows = [...filterRows];
 
   PlutoGridStateManager? _stateManager;
   List<PlutoRow?> _previousFilterRows;
+
+  String filterCheck = "";
 
   void onLoaded(PlutoGridOnLoadedEvent e) {
     _stateManager = e.stateManager;
@@ -505,53 +511,74 @@ class FilterPopupState {
         width: 250,
         title: FilterHelper.filterFieldType.toString(),
         field: FilterHelper.filterFieldValue,
-        type: FilterHelper.filterFieldType == "Date range" ? PlutoColumnType.date() : PlutoColumnType.text(),
+        type: PlutoColumnType.text(),
         enableFilterMenuItem: false,
         renderer: (rendererContext) {
           PickerDateRange? dateCreated;
-          return Row(
-            children: [
-              Text(rendererContext.row.cells['value']!.value),
-              if (rendererContext.row.cells['type']!.value.title == "Single date" || rendererContext.row.cells['type']!.value.title == "Date range")
-                IconButton(
-                  icon: const Icon(
-                    Icons.calendar_today,
-                  ),
-                  onPressed: () {
-                    bool singleCheck = rendererContext.row.cells['type']!.value.title == "Single date" ? false : true;
-                    //PlutoGridDatePicker(context: context, dateFormat: intl.DateFormat('dd/MM/YYYY'), headerDateFormat: intl.DateFormat('dd/MM/YYYY'));
-                    showDialog(
-                      context: context,
-                      builder: (
-                        BuildContext context,
-                      ) =>
-                          Dialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 0.0,
-                        backgroundColor: Colors.transparent,
-                        child: CustomDateRangeSelector(
-                          hintText: 'Created At',
-                          isMultiple: singleCheck,
-                          onChanged: (PickerDateRange? value) {
-                            if (!singleCheck) {
-                              rendererContext.row.cells['value']!.value = intl.DateFormat("yyyy-MM-dd").format(value!.startDate!);
-                            } else {
-                              rendererContext.row.cells['value']!.value =
-                                  '${intl.DateFormat("yyyy-MM-dd").format(value!.startDate!)} / ${intl.DateFormat("yyyy-MM-dd").format(value.endDate!)}';
-                            }
-                          },
-                          initialSelectedRange: dateCreated,
-                        ),
-                      ),
-                    );
+          return Row(children: [
+            Text(rendererContext.row.cells['value']!.value),
+            if (rendererContext.row.cells['type']!.value.title == "Woli Preset" &&
+                dropDown.where((element) => element["key"] == rendererContext.row.cells['column']!.value).isNotEmpty)
+              IconButton(
+                  onPressed: () async {
+                    List items = dropDown
+                        .where((element) => element["key"] == rendererContext.row.cells['column']!.value)
+                        .map((e) => e["value"])
+                        .toList()
+                        .first as List;
+                    var selected = 0;
+                    selected =
+                        (await showMenu(context: context, position: const RelativeRect.fromLTRB(0.0, 0.0, 0.0, 0.0), items: <PopupMenuItem<int>>[
+                              for (int i = 0; i < items.length; i++) PopupMenuItem<int>(value: i, child: Text(items[i].toString())),
+                            ])) ??
+                            0;
+                    rendererContext.row.cells['value']!.value = items[selected].toString();
+                    _stateManager!.appendNewRows(count: 1);
+                    _stateManager!.removeRows([_stateManager!.refRows.last]);
                   },
-                  iconSize: 18,
-                  color: Colors.red,
+                  icon: const Icon(Icons.abc)),
+            if (rendererContext.row.cells['type']!.value.title == "Single date" || rendererContext.row.cells['type']!.value.title == "Date range")
+              IconButton(
+                icon: const Icon(
+                  Icons.calendar_today,
                 ),
-            ],
-          );
+                onPressed: () {
+                  bool singleCheck = rendererContext.row.cells['type']!.value.title == "Single date" ? false : true;
+                  showDialog(
+                    context: context,
+                    builder: (
+                      BuildContext context,
+                    ) =>
+                        Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0.0,
+                      backgroundColor: Colors.transparent,
+                      child: CustomDateRangeSelector(
+                        hintText: 'Created At',
+                        isMultiple: singleCheck,
+                        onChanged: (PickerDateRange? value) {
+                          if (!singleCheck) {
+                            rendererContext.row.cells['value']!.value = intl.DateFormat("yyyy-MM-dd").format(value!.startDate!);
+                            _stateManager!.appendNewRows(count: 1);
+                            _stateManager!.removeRows([_stateManager!.refRows.last]);
+                          } else {
+                            rendererContext.row.cells['value']!.value =
+                                '${intl.DateFormat("yyyy-MM-dd").format(value!.startDate!)} / ${intl.DateFormat("yyyy-MM-dd").format(value.endDate!)}';
+                            _stateManager!.appendNewRows(count: 1);
+                            _stateManager!.removeRows([_stateManager!.refRows.last]);
+                          }
+                        },
+                        initialSelectedRange: dateCreated,
+                      ),
+                    ),
+                  );
+                },
+                iconSize: 18,
+                color: Colors.red,
+              ),
+          ]);
         },
       ),
     ];
@@ -656,6 +683,18 @@ class PlutoFilterTypeEquals implements PlutoFilterType {
   PlutoCompareFunction get compare => FilterHelper.compareEquals;
 
   const PlutoFilterTypeEquals();
+}
+
+class PlutoFilterTypeWoliPreset implements PlutoFilterType {
+  static String name = 'Woli Preset';
+
+  @override
+  String get title => PlutoFilterTypeWoliPreset.name;
+
+  @override
+  PlutoCompareFunction get compare => FilterHelper.compareEquals;
+
+  const PlutoFilterTypeWoliPreset();
 }
 
 class PlutoFilterTypeStartsWith implements PlutoFilterType {

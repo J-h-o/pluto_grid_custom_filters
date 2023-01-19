@@ -36,11 +36,13 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Id',
       field: 'id',
       type: PlutoColumnType.text(),
+      dropDownData: ["user1", "test"],
     ),
     PlutoColumn(
       title: 'Name',
       field: 'name',
       type: PlutoColumnType.text(),
+      dropDownData: ["Lmao", "Xd"],
     ),
     PlutoColumn(
       title: 'Age',

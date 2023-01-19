@@ -19,6 +19,9 @@ abstract class IColumnState {
   /// Width of the entire column.
   double get columnsWidth;
 
+  /// Drop down data for Woli Preset Filter
+  List<Map<dynamic, Object>> get dropDownData;
+
   /// Left frozen columns.
   List<PlutoColumn> get leftFrozenColumns;
 
@@ -204,6 +207,16 @@ mixin ColumnState implements IPlutoGridState {
     }
 
     return width;
+  }
+
+  @override
+  List<Map<dynamic, Object>> get dropDownData {
+    List<Map<dynamic, Object>> dropDownData = [];
+    for (final column in refColumns) {
+      dropDownData.add({'key': column.field, 'value': column.dropDownData});
+    }
+
+    return dropDownData;
   }
 
   @override
@@ -573,10 +586,7 @@ mixin ColumnState implements IPlutoGridState {
   void autoFitColumn(BuildContext context, PlutoColumn column) {
     final String maxValue = refRows.fold('', (previousValue, element) {
       final value = column.formattedValueForDisplay(
-        element.cells.entries
-            .firstWhere((element) => element.key == column.field)
-            .value
-            .value,
+        element.cells.entries.firstWhere((element) => element.key == column.field).value.value,
       );
 
       if (previousValue.length < value.length) {
@@ -602,15 +612,11 @@ mixin ColumnState implements IPlutoGridState {
 
     // todo : Apply (popup type icon, checkbox, drag indicator, renderer)
 
-    EdgeInsets cellPadding =
-        column.cellPadding ?? configuration.style.defaultCellPadding;
+    EdgeInsets cellPadding = column.cellPadding ?? configuration.style.defaultCellPadding;
 
     resizeColumn(
       column,
-      textPainter.width -
-          column.width +
-          (cellPadding.left + cellPadding.right) +
-          2,
+      textPainter.width - column.width + (cellPadding.left + cellPadding.right) + 2,
     );
   }
 
@@ -1019,9 +1025,7 @@ mixin ColumnState implements IPlutoGridState {
       return false;
     }
 
-    final columns = showFrozenColumn
-        ? leftFrozenColumns + bodyColumns + rightFrozenColumns
-        : refColumns;
+    final columns = showFrozenColumn ? leftFrozenColumns + bodyColumns + rightFrozenColumns : refColumns;
 
     final resizeHelper = getColumnsResizeHelper(
       columns: columns,

@@ -39,8 +39,7 @@ mixin FilteringRowState implements IPlutoGridState {
   List<PlutoRow> get filterRows => _state._filterRows;
 
   @override
-  bool get hasFilter =>
-      refRows.hasFilter || (filterOnlyEvent && filterRows.isNotEmpty);
+  bool get hasFilter => refRows.hasFilter || (filterOnlyEvent && filterRows.isNotEmpty);
 
   @override
   void setFilter(FilteredListFilter<PlutoRow>? filter, {bool notify = true}) {
@@ -82,8 +81,7 @@ mixin FilteringRowState implements IPlutoGridState {
   void setFilterWithFilterRows(List<PlutoRow> rows, {bool notify = true}) {
     setFilterRows(rows);
 
-    var enabledFilterColumnFields =
-        refColumns.where((element) => element.enableFilterMenuItem).toList();
+    var enabledFilterColumnFields = refColumns.where((element) => element.enableFilterMenuItem).toList();
 
     setFilter(
       FilterHelper.convertRowsToFilter(filterRows, enabledFilterColumnFields),
@@ -99,9 +97,7 @@ mixin FilteringRowState implements IPlutoGridState {
   void setFilterRows(List<PlutoRow> rows) {
     _state._filterRows = rows
         .where(
-          (element) => element.cells[FilterHelper.filterFieldValue]!.value
-              .toString()
-              .isNotEmpty,
+          (element) => element.cells[FilterHelper.filterFieldValue]!.value.toString().isNotEmpty,
         )
         .toList();
   }
@@ -110,9 +106,7 @@ mixin FilteringRowState implements IPlutoGridState {
   List<PlutoRow> filterRowsByField(String columnField) {
     return filterRows
         .where(
-          (element) =>
-              element.cells[FilterHelper.filterFieldColumn]!.value ==
-              columnField,
+          (element) => element.cells[FilterHelper.filterFieldColumn]!.value == columnField,
         )
         .toList();
   }
@@ -150,15 +144,12 @@ mixin FilteringRowState implements IPlutoGridState {
     PlutoColumn? calledColumn,
     void Function()? onClosed,
   }) {
-    var shouldProvideDefaultFilterRow =
-        filterRows.isEmpty && calledColumn != null;
+    var shouldProvideDefaultFilterRow = filterRows.isEmpty && calledColumn != null;
 
     var rows = shouldProvideDefaultFilterRow
         ? [
             FilterHelper.createFilterRow(
-              columnField: calledColumn.enableFilterMenuItem
-                  ? calledColumn.field
-                  : FilterHelper.filterFieldAllColumns,
+              columnField: calledColumn.enableFilterMenuItem ? calledColumn.field : FilterHelper.filterFieldAllColumns,
               filterType: calledColumn.defaultFilter,
             ),
           ]
@@ -182,6 +173,7 @@ mixin FilteringRowState implements IPlutoGridState {
           setFilterWithFilterRows(filterState!.rows);
         },
         columns: columns,
+        dropDown: dropDownData,
         filterRows: rows,
         focusFirstFilterValue: shouldProvideDefaultFilterRow,
         onClosed: onClosed,
