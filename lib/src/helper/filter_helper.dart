@@ -338,7 +338,11 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return column.type.compare(base, search) == 1;
+    return _compareWithRegExp(
+      // ignore: prefer_interpolation_to_compose_strings
+      r'^' + RegExp.escape(search!) + r'$',
+      base!,
+    );
   }
 
   static bool compareDateRange({
@@ -346,7 +350,8 @@ class FilterHelper {
     required String? search,
     required PlutoColumn column,
   }) {
-    return column.type.compare(base, search) == 1;
+    List<String> list = search!.split(" / ");
+    return (column.type.compare(base, list[0]) > -1 && column.type.compare(base, list[0]) < 1);
   }
 }
 
