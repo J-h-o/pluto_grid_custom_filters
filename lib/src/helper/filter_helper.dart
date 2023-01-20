@@ -514,29 +514,40 @@ class FilterPopupState {
         type: PlutoColumnType.text(),
         enableFilterMenuItem: false,
         renderer: (rendererContext) {
+          // ↓ hold tap position, set during onTapDown, using getPosition() method
+          Offset? tapXY;
+
+          // ↓ get the tap position Offset
+          void getPosition(TapDownDetails detail) {
+            tapXY = detail.globalPosition;
+          }
+
           PickerDateRange? dateCreated;
           return Row(children: [
             Text(rendererContext.row.cells['value']!.value),
             if (rendererContext.row.cells['type']!.value.title == "Woli Preset" &&
                 dropDown.where((element) => element["key"] == rendererContext.row.cells['column']!.value).isNotEmpty)
-              IconButton(
-                  onPressed: () async {
+              InkWell(
+                  onTapDown: (details) => getPosition(details),
+                  onTap: () async {
                     List items = dropDown
                         .where((element) => element["key"] == rendererContext.row.cells['column']!.value)
                         .map((e) => e["value"])
                         .toList()
                         .first as List;
                     var selected = 0;
-                    selected =
-                        (await showMenu(context: context, position: const RelativeRect.fromLTRB(0.0, 0.0, 0.0, 0.0), items: <PopupMenuItem<int>>[
+                    selected = (await showMenu(
+                            context: context,
+                            position: RelativeRect.fromSize(tapXY! & const Size(40, 40), Overlay.of(context)!.context.size!),
+                            items: <PopupMenuItem<int>>[
                               for (int i = 0; i < items.length; i++) PopupMenuItem<int>(value: i, child: Text(items[i].toString())),
                             ])) ??
-                            0;
+                        0;
                     rendererContext.row.cells['value']!.value = items[selected].toString();
                     _stateManager!.appendNewRows(count: 1);
                     _stateManager!.removeRows([_stateManager!.refRows.last]);
                   },
-                  icon: const Icon(Icons.abc)),
+                  child: const Icon(Icons.abc)),
             if (rendererContext.row.cells['type']!.value.title == "Single date" || rendererContext.row.cells['type']!.value.title == "Date range")
               IconButton(
                 icon: const Icon(
