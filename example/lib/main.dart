@@ -37,8 +37,10 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       field: 'id',
       type: PlutoColumnType.text(),
       dropDownData: ["user1", "test"],
+      readOnly: true,
     ),
     PlutoColumn(
+      readOnly: true,
       title: 'Name',
       field: 'name',
       type: PlutoColumnType.text(),
@@ -48,6 +50,7 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
       title: 'Age',
       field: 'age',
       type: PlutoColumnType.number(),
+      readOnly: true,
     ),
     PlutoColumn(
       title: 'Role',
@@ -57,21 +60,25 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
         'Designer',
         'Owner',
       ]),
+      readOnly: true,
     ),
     PlutoColumn(
       title: 'Joined',
       field: 'joined',
       type: PlutoColumnType.date(),
+      readOnly: true,
     ),
     PlutoColumn(
       title: 'Working time',
       field: 'working_time',
       type: PlutoColumnType.time(),
+      readOnly: true,
     ),
     PlutoColumn(
       title: 'salary',
       field: 'salary',
       type: PlutoColumnType.currency(),
+      readOnly: true,
       footerRenderer: (rendererContext) {
         return PlutoAggregateColumnFooter(
           rendererContext: rendererContext,

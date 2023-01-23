@@ -1,3 +1,4 @@
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -45,8 +46,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
   @override
   List<TextInputFormatter>? get inputFormatters => [];
 
-  String get formattedValue =>
-      widget.column.formattedValueForDisplayInEditing(widget.cell.value);
+  String get formattedValue => widget.column.formattedValueForDisplayInEditing(widget.cell.value);
 
   @override
   void initState() {
@@ -87,8 +87,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       });
     }
 
-    if (!widget.stateManager.isEditing ||
-        widget.stateManager.currentColumn?.enableEditingMode != true) {
+    if (!widget.stateManager.isEditing || widget.stateManager.currentColumn?.enableEditingMode != true) {
       widget.stateManager.setTextEditingController(null);
     }
 
@@ -192,12 +191,8 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       return KeyEventResult.handled;
     }
 
-    final skip = !(keyManager.isVertical ||
-        _moveHorizontal(keyManager) ||
-        keyManager.isEsc ||
-        keyManager.isTab ||
-        keyManager.isF3 ||
-        keyManager.isEnter);
+    final skip =
+        !(keyManager.isVertical || _moveHorizontal(keyManager) || keyManager.isEsc || keyManager.isTab || keyManager.isF3 || keyManager.isEnter);
 
     // 이동 및 엔터키, 수정불가 셀의 좌우 이동을 제외한 문자열 입력 등의 키 입력은 텍스트 필드로 전파 한다.
     if (skip) {
@@ -241,26 +236,51 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       cellFocus.requestFocus();
     }
 
-    return TextField(
-      focusNode: cellFocus,
-      controller: _textController,
-      readOnly: widget.column.checkReadOnly(widget.row, widget.cell),
-      onChanged: _handleOnChanged,
-      onEditingComplete: _handleOnComplete,
-      onSubmitted: (_) => _handleOnComplete(),
-      onTap: _handleOnTap,
-      style: widget.stateManager.configuration.style.cellTextStyle,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
+    return InkWell(
+      onDoubleTap: () => {
+        Clipboard.setData(
+          ClipboardData(
+            text: _textController.text == "" ? "-" : _textController.text,
+          ),
         ),
-        contentPadding: EdgeInsets.zero,
+        Flushbar(
+          message: "The text has been copied!",
+          backgroundColor: const Color(0xFF0FBEB1),
+          icon: const Icon(
+            Icons.info_outline,
+            size: 28.0,
+            color: Colors.yellow,
+          ),
+          margin: const EdgeInsets.all(6.0),
+          flushbarStyle: FlushbarStyle.FLOATING,
+          flushbarPosition: FlushbarPosition.TOP,
+          textDirection: Directionality.of(context),
+          borderRadius: BorderRadius.circular(12),
+          duration: const Duration(seconds: 3),
+          leftBarIndicatorColor: const Color.fromARGB(67, 15, 190, 178),
+        )..show(context),
+      },
+      child: TextField(
+        focusNode: cellFocus,
+        controller: _textController,
+        readOnly: widget.column.checkReadOnly(widget.row, widget.cell),
+        onChanged: _handleOnChanged,
+        onEditingComplete: _handleOnComplete,
+        onSubmitted: (_) => _handleOnComplete(),
+        onTap: _handleOnTap,
+        style: widget.stateManager.configuration.style.cellTextStyle,
+        decoration: const InputDecoration(
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+          ),
+          contentPadding: EdgeInsets.zero,
+        ),
+        maxLines: 1,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        textAlignVertical: TextAlignVertical.center,
+        textAlign: widget.column.textAlign.value,
       ),
-      maxLines: 1,
-      keyboardType: keyboardType,
-      inputFormatters: inputFormatters,
-      textAlignVertical: TextAlignVertical.center,
-      textAlign: widget.column.textAlign.value,
     );
   }
 }
