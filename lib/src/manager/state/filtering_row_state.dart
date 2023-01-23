@@ -172,7 +172,7 @@ mixin FilteringRowState implements IPlutoGridState {
         handleApplyFilter: (filterState) {
           setFilterWithFilterRows(filterState!.rows);
         },
-        columns: columns,
+        columns: refColumns.originalList,
         dropDown: dropDownData,
         filterRows: rows,
         focusFirstFilterValue: shouldProvideDefaultFilterRow,
