@@ -552,7 +552,7 @@ class FilterPopupState {
                     _stateManager!.appendNewRows(count: 1);
                     _stateManager!.removeRows([_stateManager!.refRows.last]);
                   },
-                  child: const Icon(Icons.abc)),
+                  child: const Icon(Icons.arrow_drop_down)),
             if (rendererContext.row.cells['type']!.value.title == "Single date" || rendererContext.row.cells['type']!.value.title == "Date range")
               IconButton(
                 icon: const Icon(
@@ -592,7 +592,6 @@ class FilterPopupState {
                   );
                 },
                 iconSize: 18,
-                color: Colors.red,
               ),
           ]);
         },
