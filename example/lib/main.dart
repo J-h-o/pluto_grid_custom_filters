@@ -35,15 +35,15 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
     PlutoColumn(
       title: 'Id',
       field: 'id',
-      type: PlutoColumnType.text(),
-      dropDownData: ["user1", "test"],
+      type: PlutoColumnType.select(['user1', 'user2', 'user3']),
+      dropDownData: ["user1", "user2", "user3", 'test'],
       readOnly: true,
     ),
     PlutoColumn(
       readOnly: true,
       title: 'Name',
       field: 'name',
-      type: PlutoColumnType.text(),
+      type: PlutoColumnType.select(['Lmao', 'xd']),
       dropDownData: ["Lmao", "Xd"],
     ),
     PlutoColumn(
@@ -167,7 +167,20 @@ class _PlutoGridExamplePageState extends State<PlutoGridExamplePage> {
           onChanged: (PlutoGridOnChangedEvent event) {
             print(event);
           },
-          configuration: const PlutoGridConfiguration(),
+          configuration: PlutoGridConfiguration(
+            columnFilter: PlutoGridColumnFilterConfig(
+              filters: [...FilterHelper.defaultFilters],
+              resolveDefaultColumnFilter: (column, resolver) {
+                if (column.field.contains('join')) {
+                  return resolver<PlutoFilterTypeDateRange>() as PlutoFilterType;
+                }
+                if (column.field.contains('id')) {
+                  return resolver<PlutoFilterTypeWoliPreset>() as PlutoFilterType;
+                }
+                return resolver<PlutoFilterTypeContains>() as PlutoFilterType;
+              },
+            ),
+          ),
         ),
       ),
     );
