@@ -2,7 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:pluto_grid/src/helper/woli_syncfusion_date_picker.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+
+import 'package:intl/intl.dart' as intl;
 
 import '../ui.dart';
 
@@ -24,6 +29,8 @@ class PlutoColumnFilter extends PlutoStatefulWidget {
 class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   List<PlutoRow> _filterRows = [];
 
+  List _selectedAnimals = [];
+
   String _text = '';
 
   bool _enabled = false;
@@ -35,46 +42,32 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   late final TextEditingController _controller;
 
   String get _filterValue {
-    return _filterRows.isEmpty
-        ? ''
-        : _filterRows.first.cells[FilterHelper.filterFieldValue]!.value
-            .toString();
+    return _filterRows.isEmpty ? '' : _filterRows.first.cells[FilterHelper.filterFieldValue]!.value.toString();
   }
 
   bool get _hasCompositeFilter {
-    return _filterRows.length > 1 ||
-        stateManager
-            .filterRowsByField(FilterHelper.filterFieldAllColumns)
-            .isNotEmpty;
+    return _filterRows.length > 1 || stateManager.filterRowsByField(FilterHelper.filterFieldAllColumns).isNotEmpty;
   }
 
   InputBorder get _border => OutlineInputBorder(
-        borderSide: BorderSide(
-            color: stateManager.configuration.style.borderColor, width: 0.0),
+        borderSide: BorderSide(color: stateManager.configuration.style.borderColor, width: 0.0),
         borderRadius: BorderRadius.zero,
       );
 
   InputBorder get _enabledBorder => OutlineInputBorder(
-        borderSide: BorderSide(
-            color: stateManager.configuration.style.activatedBorderColor,
-            width: 0.0),
+        borderSide: BorderSide(color: stateManager.configuration.style.activatedBorderColor, width: 0.0),
         borderRadius: BorderRadius.zero,
       );
 
   InputBorder get _disabledBorder => OutlineInputBorder(
-        borderSide: BorderSide(
-            color: stateManager.configuration.style.inactivatedBorderColor,
-            width: 0.0),
+        borderSide: BorderSide(color: stateManager.configuration.style.inactivatedBorderColor, width: 0.0),
         borderRadius: BorderRadius.zero,
       );
 
-  Color get _textFieldColor => _enabled
-      ? stateManager.configuration.style.cellColorInEditState
-      : stateManager.configuration.style.cellColorInReadOnlyState;
+  Color get _textFieldColor =>
+      _enabled ? stateManager.configuration.style.cellColorInEditState : stateManager.configuration.style.cellColorInReadOnlyState;
 
-  EdgeInsets get _padding =>
-      widget.column.filterPadding ??
-      stateManager.configuration.style.defaultColumnFilterPadding;
+  EdgeInsets get _padding => widget.column.filterPadding ?? stateManager.configuration.style.defaultColumnFilterPadding;
 
   @override
   PlutoGridStateManager get stateManager => widget.stateManager;
@@ -155,12 +148,9 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
       return KeyEventResult.handled;
     }
 
-    final handleMoveDown =
-        (keyManager.isDown || keyManager.isEnter || keyManager.isEsc) &&
-            stateManager.refRows.isNotEmpty;
+    final handleMoveDown = (keyManager.isDown || keyManager.isEnter || keyManager.isEsc) && stateManager.refRows.isNotEmpty;
 
-    final handleMoveHorizontal = keyManager.isTab ||
-        (_controller.text.isEmpty && keyManager.isHorizontal);
+    final handleMoveHorizontal = keyManager.isTab || (_controller.text.isEmpty && keyManager.isHorizontal);
 
     final skip = !(handleMoveDown || handleMoveHorizontal || keyManager.isF3);
 
@@ -200,14 +190,9 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
       return;
     }
 
-    if (plutoEvent is PlutoGridCannotMoveCurrentCellEvent &&
-        plutoEvent.direction.isUp) {
-      var isCurrentColumn = widget
-              .stateManager
-              .refColumns[stateManager.columnIndexesByShowFrozen[
-                  plutoEvent.cellPosition.columnIdx!]]
-              .key ==
-          widget.column.key;
+    if (plutoEvent is PlutoGridCannotMoveCurrentCellEvent && plutoEvent.direction.isUp) {
+      var isCurrentColumn =
+          widget.stateManager.refColumns[stateManager.columnIndexesByShowFrozen[plutoEvent.cellPosition.columnIdx!]].key == widget.column.key;
 
       if (isCurrentColumn) {
         stateManager.clearCurrentCell(notify: false);
@@ -227,8 +212,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         column: widget.column,
         filterType: widget.column.defaultFilter,
         filterValue: changed,
-        debounceMilliseconds:
-            stateManager.configuration.columnFilter.debounceMilliseconds,
+        debounceMilliseconds: stateManager.configuration.columnFilter.debounceMilliseconds,
       ),
     );
   }
@@ -247,9 +231,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         decoration: BoxDecoration(
           border: BorderDirectional(
             top: BorderSide(color: style.borderColor),
-            end: style.enableColumnBorderVertical
-                ? BorderSide(color: style.borderColor)
-                : BorderSide.none,
+            end: style.enableColumnBorderVertical ? BorderSide(color: style.borderColor) : BorderSide.none,
           ),
         ),
         child: Padding(
@@ -272,6 +254,58 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
                 disabledBorder: _disabledBorder,
                 focusedBorder: _enabledBorder,
                 contentPadding: const EdgeInsets.all(5),
+                suffixIcon: _enabled
+                    ? widget.column.defaultFilter.title == 'Date range'
+                        ? ElevatedButton(
+                            onPressed: () {
+                              PickerDateRange? dateCreated;
+                              showDialog(
+                                context: context,
+                                builder: (
+                                  BuildContext context,
+                                ) =>
+                                    Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  elevation: 0.0,
+                                  backgroundColor: Colors.transparent,
+                                  child: CustomDateRangeSelector(
+                                    hintText: 'Created At',
+                                    isMultiple: true,
+                                    onChanged: (PickerDateRange? value) {
+                                      _controller.text =
+                                          '${intl.DateFormat("yyyy-MM-dd").format(value!.startDate!)} / ${intl.DateFormat("yyyy-MM-dd").format(value.endDate!)}';
+                                      _handleOnChanged(_controller.text);
+                                    },
+                                    initialSelectedRange: dateCreated,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: const Icon(Icons.calendar_month),
+                          )
+                        : widget.column.defaultFilter.title == 'Woli Preset'
+                            ? ElevatedButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (ctx) {
+                                        return MultiSelectDialog(
+                                          items: widget.column.dropDownData.map((e) => MultiSelectItem(e, e)).toList(),
+                                          listType: MultiSelectListType.LIST,
+                                          onConfirm: (values) {
+                                            _selectedAnimals = values;
+                                            _handleOnChanged(_selectedAnimals.join(','));
+                                          },
+                                          initialValue: _selectedAnimals,
+                                        );
+                                      });
+                                },
+                                child: const Icon(Icons.arrow_drop_down),
+                              )
+                            : null
+                    : null,
               ),
             ),
           ),
