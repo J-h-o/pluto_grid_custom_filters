@@ -707,7 +707,15 @@ class PlutoFilterTypeWoliPreset implements PlutoFilterType {
   String get title => PlutoFilterTypeWoliPreset.name;
 
   @override
-  PlutoCompareFunction get compare => FilterHelper.compareEquals;
+  get compare => ({
+        required String? base,
+        required String? search,
+        required PlutoColumn? column,
+      }) {
+        var keys = search!.split(',').map((e) => e.toUpperCase()).toList();
+
+        return keys.contains(base!.toUpperCase());
+      };
 
   const PlutoFilterTypeWoliPreset();
 }
