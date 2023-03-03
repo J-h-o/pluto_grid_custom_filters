@@ -28,8 +28,7 @@ class PlutoSelectCell extends StatefulWidget implements PopupCell {
   PlutoSelectCellState createState() => PlutoSelectCellState();
 }
 
-class PlutoSelectCellState extends State<PlutoSelectCell>
-    with PopupCellState<PlutoSelectCell> {
+class PlutoSelectCellState extends State<PlutoSelectCell> with PopupCellState<PlutoSelectCell> {
   @override
   List<PlutoColumn> popupColumns = [];
 
@@ -37,7 +36,7 @@ class PlutoSelectCellState extends State<PlutoSelectCell>
   List<PlutoRow> popupRows = [];
 
   @override
-  IconData? get icon => widget.column.type.select.popupIcon;
+  IconData? get icon => null;
 
   late bool enableColumnFilter;
 
@@ -47,12 +46,9 @@ class PlutoSelectCellState extends State<PlutoSelectCell>
 
     enableColumnFilter = widget.column.type.select.enableColumnFilter;
 
-    final columnFilterHeight = enableColumnFilter
-        ? widget.stateManager.configuration.style.columnFilterHeight
-        : 0;
+    final columnFilterHeight = enableColumnFilter ? widget.stateManager.configuration.style.columnFilterHeight : 0;
 
-    final rowsHeight = widget.column.type.select.items.length *
-        widget.stateManager.rowTotalHeight;
+    final rowsHeight = widget.column.type.select.items.length * widget.stateManager.rowTotalHeight;
 
     popupHeight = widget.stateManager.configuration.style.columnHeight +
         columnFilterHeight +
