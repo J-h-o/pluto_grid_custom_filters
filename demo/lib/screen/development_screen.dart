@@ -129,9 +129,7 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
       columnGroups.addAll(testColumnGroupsA);
       rows.addAll(DummyData.rowsByColumns(length: 10000, columns: columns));
       rowColorCallback = (PlutoRowColorContext rowColorContext) {
-        return rowColorContext.row.cells['column2']?.value == 'green'
-            ? const Color(0xFFE2F6DF)
-            : Colors.white;
+        return rowColorContext.row.cells['column2']?.value == 'green' ? const Color(0xFFE2F6DF) : Colors.white;
       };
     }
 
@@ -144,8 +142,7 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
         chunkSize: 100,
         chunkCount: 10,
       ).then((fetchedRows) {
-        PlutoGridStateManager.initializeRowsAsync(columns, fetchedRows)
-            .then((initializedRows) {
+        PlutoGridStateManager.initializeRowsAsync(columns, fetchedRows).then((initializedRows) {
           stateManager.refRows.addAll(initializedRows);
           stateManager.setRowGroup(PlutoRowGroupByColumnDelegate(
             columns: [
@@ -369,12 +366,12 @@ class _NoRows extends StatelessWidget {
             border: Border.all(),
             borderRadius: const BorderRadius.all(Radius.circular(5)),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(10),
+          child: const Padding(
+            padding: EdgeInsets.all(10),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
+              children: [
                 Icon(Icons.info_outline),
                 SizedBox(height: 5),
                 Text('There are no records'),
@@ -487,18 +484,15 @@ class _HeaderState extends State<_Header> {
   }
 
   void handleToggleColumnTitle() {
-    widget.stateManager
-        .setShowColumnTitle(!widget.stateManager.showColumnTitle);
+    widget.stateManager.setShowColumnTitle(!widget.stateManager.showColumnTitle);
   }
 
   void handleToggleColumnFilter() {
-    widget.stateManager
-        .setShowColumnFilter(!widget.stateManager.showColumnFilter);
+    widget.stateManager.setShowColumnFilter(!widget.stateManager.showColumnFilter);
   }
 
   void handleToggleColumnFooter() {
-    widget.stateManager
-        .setShowColumnFooter(!widget.stateManager.showColumnFooter);
+    widget.stateManager.setShowColumnFooter(!widget.stateManager.showColumnFooter);
   }
 
   void handleSelectingMode(Object? mode) {
@@ -773,8 +767,7 @@ class _HeaderState extends State<_Header> {
             ),
             PlutoMenuItem.radio(
               title: 'AutoSize',
-              initialRadioValue:
-                  widget.stateManager.columnSizeConfig.autoSizeMode,
+              initialRadioValue: widget.stateManager.columnSizeConfig.autoSizeMode,
               radioItems: PlutoAutoSizeMode.values,
               onChanged: handleAutoSize,
               getTitle: (option) => (option as PlutoAutoSizeMode).name,
@@ -784,8 +777,7 @@ class _HeaderState extends State<_Header> {
               children: [
                 PlutoMenuItem.checkbox(
                   title: 'Restore after hide column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
-                      .restoreAutoSizeAfterHideColumn,
+                  initialCheckValue: widget.stateManager.columnSizeConfig.restoreAutoSizeAfterHideColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterHideColumn,
                     flag,
@@ -793,8 +785,7 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after frozen column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
-                      .restoreAutoSizeAfterFrozenColumn,
+                  initialCheckValue: widget.stateManager.columnSizeConfig.restoreAutoSizeAfterFrozenColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterFrozenColumn,
                     flag,
@@ -802,8 +793,7 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after move column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
-                      .restoreAutoSizeAfterMoveColumn,
+                  initialCheckValue: widget.stateManager.columnSizeConfig.restoreAutoSizeAfterMoveColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterMoveColumn,
                     flag,
@@ -811,8 +801,7 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after insert column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
-                      .restoreAutoSizeAfterInsertColumn,
+                  initialCheckValue: widget.stateManager.columnSizeConfig.restoreAutoSizeAfterInsertColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterInsertColumn,
                     flag,
@@ -820,8 +809,7 @@ class _HeaderState extends State<_Header> {
                 ),
                 PlutoMenuItem.checkbox(
                   title: 'Restore after remove column',
-                  initialCheckValue: widget.stateManager.columnSizeConfig
-                      .restoreAutoSizeAfterRemoveColumn,
+                  initialCheckValue: widget.stateManager.columnSizeConfig.restoreAutoSizeAfterRemoveColumn,
                   onChanged: (flag) => handleRestoreAutoSize(
                     _RestoreAutoSizeOptions.restoreAutoSizeAfterRemoveColumn,
                     flag,
@@ -836,8 +824,7 @@ class _HeaderState extends State<_Header> {
             ),
             PlutoMenuItem.radio(
               title: 'Resize',
-              initialRadioValue:
-                  widget.stateManager.columnSizeConfig.resizeMode,
+              initialRadioValue: widget.stateManager.columnSizeConfig.resizeMode,
               radioItems: PlutoResizeMode.values,
               onChanged: handleResize,
               getTitle: (option) => (option as PlutoResizeMode).name,
@@ -867,8 +854,7 @@ class _HeaderState extends State<_Header> {
                   initialRadioValue: textDirection,
                   radioItems: TextDirection.values,
                   onChanged: handleTextDirection,
-                  getTitle: (option) =>
-                      (option as TextDirection).name.toUpperCase(),
+                  getTitle: (option) => (option as TextDirection).name.toUpperCase(),
                 ),
               ],
             ),
@@ -880,8 +866,7 @@ class _HeaderState extends State<_Header> {
             PlutoMenuItem.radio(
               title: 'GridMode',
               initialRadioValue: gridMode,
-              radioItems:
-                  PlutoGridMode.values.where((e) => !e.isPopup).toList(),
+              radioItems: PlutoGridMode.values.where((e) => !e.isPopup).toList(),
               onChanged: handleGridMode,
               getTitle: (option) => (option as PlutoGridMode).name,
             ),
@@ -1085,8 +1070,7 @@ final testColumnsA = [
     width: 80,
     renderer: (rendererContext) {
       return Container(
-        color:
-            rendererContext.cell.value % 2 == 0 ? Colors.yellow : Colors.teal,
+        color: rendererContext.cell.value % 2 == 0 ? Colors.yellow : Colors.teal,
       );
     },
   ),

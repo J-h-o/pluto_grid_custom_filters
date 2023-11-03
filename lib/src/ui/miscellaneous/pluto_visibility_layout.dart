@@ -8,8 +8,7 @@ import 'package:pluto_grid/pluto_grid.dart';
 /// It is used to lay out the widgets
 /// of [PlutoCell] or [PlutoColumn], [PlutoColumnGroup] of [PlutoRow]
 /// or render only the widgets displayed according to the screen width.
-class PlutoVisibilityLayout extends RenderObjectWidget
-    implements MultiChildRenderObjectWidget {
+class PlutoVisibilityLayout extends RenderObjectWidget implements MultiChildRenderObjectWidget {
   const PlutoVisibilityLayout({
     super.key,
     required this.children,
@@ -30,8 +29,7 @@ class PlutoVisibilityLayout extends RenderObjectWidget
   final double initialViewportDimension;
 
   @override
-  PlutoVisibilityLayoutRenderObjectElement createElement() =>
-      PlutoVisibilityLayoutRenderObjectElement(
+  PlutoVisibilityLayoutRenderObjectElement createElement() => PlutoVisibilityLayoutRenderObjectElement(
         widget: this,
         scrollController: scrollController,
         initialViewportDimension: initialViewportDimension,
@@ -51,8 +49,7 @@ class PlutoVisibilityLayout extends RenderObjectWidget
   }
 }
 
-class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
-    implements MultiChildRenderObjectElement {
+class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement implements MultiChildRenderObjectElement {
   PlutoVisibilityLayoutRenderObjectElement({
     required PlutoVisibilityLayout widget,
     required this.scrollController,
@@ -65,10 +62,8 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
   final double initialViewportDimension;
 
   @override
-  ContainerRenderObjectMixin<RenderObject,
-      ContainerParentDataMixin<RenderObject>> get renderObject {
-    return super.renderObject as ContainerRenderObjectMixin<RenderObject,
-        ContainerParentDataMixin<RenderObject>>;
+  ContainerRenderObjectMixin<RenderObject, ContainerParentDataMixin<RenderObject>> get renderObject {
+    return super.renderObject as ContainerRenderObjectMixin<RenderObject, ContainerParentDataMixin<RenderObject>>;
   }
 
   @override
@@ -101,8 +96,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
   }
 
   double get _maxSize => _widgetChildren.isNotEmpty
-      ? (_widgetChildren.last.layoutChild.startPosition +
-          _widgetChildren.last.layoutChild.width)
+      ? (_widgetChildren.last.layoutChild.startPosition + _widgetChildren.last.layoutChild.width)
       : 0;
 
   double _previousMaxScroll = 0;
@@ -123,8 +117,8 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
         _previousVisibleLastX1 <= _visibleLast &&
         _visibleLast <= _previousVisibleLastX2;
 
-    final bool sameMaxScrollExtent = _previousMaxScroll == _maxScrollExtent &&
-        scrollController.position.maxScrollExtent == _maxScrollExtent;
+    final bool sameMaxScrollExtent =
+        _previousMaxScroll == _maxScrollExtent && scrollController.position.maxScrollExtent == _maxScrollExtent;
 
     if (sameBoundScroll && sameMaxScrollExtent) {
       return;
@@ -139,9 +133,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
     required double startOffset,
     required PlutoVisibilityLayoutChild layoutChild,
   }) {
-    return layoutChild.keepAlive ||
-        (startOffset <= _visibleLast &&
-            startOffset + layoutChild.width >= _visibleFirst);
+    return layoutChild.keepAlive || (startOffset <= _visibleLast && startOffset + layoutChild.width >= _visibleFirst);
   }
 
   void updateLastVisible({
@@ -313,8 +305,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
 
   @override
   void insertRenderObjectChild(RenderObject child, IndexedSlot<Element?> slot) {
-    final ContainerRenderObjectMixin<RenderObject,
-            ContainerParentDataMixin<RenderObject>> renderObject =
+    final ContainerRenderObjectMixin<RenderObject, ContainerParentDataMixin<RenderObject>> renderObject =
         this.renderObject;
     assert(renderObject.debugValidateChild(child));
     renderObject.insert(child, after: slot.value?.renderObject);
@@ -322,10 +313,8 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
   }
 
   @override
-  void moveRenderObjectChild(RenderObject child, IndexedSlot<Element?> oldSlot,
-      IndexedSlot<Element?> newSlot) {
-    final ContainerRenderObjectMixin<RenderObject,
-            ContainerParentDataMixin<RenderObject>> renderObject =
+  void moveRenderObjectChild(RenderObject child, IndexedSlot<Element?> oldSlot, IndexedSlot<Element?> newSlot) {
+    final ContainerRenderObjectMixin<RenderObject, ContainerParentDataMixin<RenderObject>> renderObject =
         this.renderObject;
     assert(child.parent == renderObject);
     renderObject.move(child, after: newSlot.value?.renderObject);
@@ -334,8 +323,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
 
   @override
   void removeRenderObjectChild(RenderObject child, Object? slot) {
-    final ContainerRenderObjectMixin<RenderObject,
-            ContainerParentDataMixin<RenderObject>> renderObject =
+    final ContainerRenderObjectMixin<RenderObject, ContainerParentDataMixin<RenderObject>> renderObject =
         this.renderObject;
     assert(child.parent == renderObject);
     renderObject.remove(child);
@@ -376,8 +364,7 @@ class PlutoVisibilityLayoutRenderObjectElement extends RenderObjectElement
                 'This typically means that the `${newChild.widget}` or its children\n'
                 'are not a subtype of `RenderObjectWidget`.',
               ),
-              newChild.describeElement(
-                  'The following element does not have an associated render object'),
+              newChild.describeElement('The following element does not have an associated render object'),
               DiagnosticsDebugCreator(DebugCreator(newChild)),
             ]),
           ),
@@ -396,8 +383,7 @@ class PlutoVisibilityLayoutId extends LayoutId {
     required PlutoVisibilityLayoutChild child,
   }) : super(key: key, child: child);
 
-  PlutoVisibilityLayoutChild get layoutChild =>
-      child as PlutoVisibilityLayoutChild;
+  PlutoVisibilityLayoutChild get layoutChild => child as PlutoVisibilityLayoutChild;
 }
 
 abstract class PlutoVisibilityLayoutChild implements Widget {
@@ -417,7 +403,10 @@ class _NullElement extends Element {
   bool get debugDoingBuild => throw UnimplementedError();
 
   @override
-  void performRebuild() => throw UnimplementedError();
+  void performRebuild() {
+    super.performRebuild();
+    throw UnimplementedError();
+  }
 }
 
 class _NullWidget extends Widget {

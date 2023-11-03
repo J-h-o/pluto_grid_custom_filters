@@ -171,7 +171,8 @@ class FilterHelper {
     }
 
     for (var row in filteredRows) {
-      if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns || row.cells[filterFieldColumn]!.value == column.field) {
+      if (row!.cells[filterFieldColumn]!.value == filterFieldAllColumns ||
+          row.cells[filterFieldColumn]!.value == column.field) {
         return true;
       }
     }
@@ -543,9 +544,11 @@ class FilterPopupState {
                     var selected = 0;
                     selected = (await showMenu(
                             context: context,
-                            position: RelativeRect.fromSize(tapXY! & const Size(40, 40), Overlay.of(context)!.context.size!),
+                            position:
+                                RelativeRect.fromSize(tapXY! & const Size(40, 40), Overlay.of(context).context.size!),
                             items: <PopupMenuItem<int>>[
-                              for (int i = 0; i < items.length; i++) PopupMenuItem<int>(value: i, child: Text(items[i].toString())),
+                              for (int i = 0; i < items.length; i++)
+                                PopupMenuItem<int>(value: i, child: Text(items[i].toString())),
                             ])) ??
                         0;
                     rendererContext.row.cells['value']!.value = items[selected].toString();
@@ -553,7 +556,8 @@ class FilterPopupState {
                     _stateManager!.removeRows([_stateManager!.refRows.last]);
                   },
                   child: const Icon(Icons.arrow_drop_down)),
-            if (rendererContext.row.cells['type']!.value.title == "Single date" || rendererContext.row.cells['type']!.value.title == "Date range")
+            if (rendererContext.row.cells['type']!.value.title == "Single date" ||
+                rendererContext.row.cells['type']!.value.title == "Date range")
               IconButton(
                 icon: const Icon(
                   Icons.calendar_today,
@@ -576,7 +580,8 @@ class FilterPopupState {
                         isMultiple: singleCheck,
                         onChanged: (PickerDateRange? value) {
                           if (!singleCheck) {
-                            rendererContext.row.cells['value']!.value = intl.DateFormat("yyyy-MM-dd").format(value!.startDate!);
+                            rendererContext.row.cells['value']!.value =
+                                intl.DateFormat("yyyy-MM-dd").format(value!.startDate!);
                             _stateManager!.appendNewRows(count: 1);
                             _stateManager!.removeRows([_stateManager!.refRows.last]);
                           } else {

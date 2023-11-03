@@ -81,11 +81,7 @@ class _CustomDateRangeSelectorState extends State<CustomDateRangeSelector> {
           cancelText: "Clear",
           confirmText: "Ok",
           onSubmit: (value) {
-            print(value);
             Navigator.of(context, rootNavigator: true).pop();
-            // widget.isMultiple!
-            //     ? widget.onChanged(initialSelectedRange)
-            //     : initialSelectedSingle = value;
             widget.onChanged(initialSelectedRange);
           },
           onCancel: () {
