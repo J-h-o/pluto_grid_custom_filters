@@ -14,7 +14,7 @@ dependencies:
   intl: ^0.18.0
   rxdart: ^0.27.7
   collection: ^1.17.1
-  syncfusion_flutter_datepicker: ^20.4.43
+  syncfusion_flutter_datepicker: ^23.2.6
   another_flushbar: ^1.12.29
   multi_select_flutter: ^4.1.3
 
