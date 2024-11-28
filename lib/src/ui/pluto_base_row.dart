@@ -26,9 +26,7 @@ class PlutoBaseRow extends StatelessWidget {
 
   bool _checkSameDragRows(PlutoRow draggingRow) {
     final List<PlutoRow> selectedRows =
-        stateManager.currentSelectingRows.isNotEmpty
-            ? stateManager.currentSelectingRows
-            : [draggingRow];
+        stateManager.currentSelectingRows.isNotEmpty ? stateManager.currentSelectingRows : [draggingRow];
 
     final end = rowIdx + selectedRows.length;
 
@@ -41,18 +39,16 @@ class PlutoBaseRow extends StatelessWidget {
     return true;
   }
 
-  bool _handleOnWillAccept(PlutoRow? draggingRow) {
-    if (draggingRow == null) {
-      return false;
-    }
+  bool _handleOnWillAccept(DragTargetDetails<PlutoRow> details) {
+    final draggingRow = details.data;
 
     return !_checkSameDragRows(draggingRow);
   }
 
-  void _handleOnAccept(PlutoRow draggingRow) async {
-    final draggingRows = stateManager.currentSelectingRows.isNotEmpty
-        ? stateManager.currentSelectingRows
-        : [draggingRow];
+  void _handleOnAccept(DragTargetDetails<PlutoRow> details) async {
+    final draggingRow = details.data;
+    final draggingRows =
+        stateManager.currentSelectingRows.isNotEmpty ? stateManager.currentSelectingRows : [draggingRow];
 
     stateManager.eventManager!.addEvent(
       PlutoGridDragRowsEvent(
@@ -81,8 +77,7 @@ class PlutoBaseRow extends StatelessWidget {
       stateManager: stateManager,
       rowIdx: rowIdx,
       row: row,
-      enableRowColorAnimation:
-          stateManager.configuration.style.enableRowColorAnimation,
+      enableRowColorAnimation: stateManager.configuration.style.enableRowColorAnimation,
       key: ValueKey('rowContainer_${row.key}'),
       child: visibilityLayout
           ? PlutoVisibilityLayout(
@@ -111,8 +106,8 @@ class PlutoBaseRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DragTarget<PlutoRow>(
-      onWillAccept: _handleOnWillAccept,
-      onAccept: _handleOnAccept,
+      onWillAcceptWithDetails: _handleOnWillAccept,
+      onAcceptWithDetails: _handleOnAccept,
       builder: _dragTargetBuilder,
     );
   }
@@ -200,9 +195,7 @@ class _RowContainerWidget extends PlutoStatefulWidget {
 }
 
 class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
-    with
-        AutomaticKeepAliveClientMixin,
-        PlutoStateWithKeepAlive<_RowContainerWidget> {
+    with AutomaticKeepAliveClientMixin, PlutoStateWithKeepAlive<_RowContainerWidget> {
   @override
   PlutoGridStateManager get stateManager => widget.stateManager;
 
@@ -212,10 +205,9 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
       ? stateManager.configuration.style.rowColor
       : stateManager.configuration.style.oddRowColor!;
 
-  Color get _evenRowColor =>
-      stateManager.configuration.style.evenRowColor == null
-          ? stateManager.configuration.style.rowColor
-          : stateManager.configuration.style.evenRowColor!;
+  Color get _evenRowColor => stateManager.configuration.style.evenRowColor == null
+      ? stateManager.configuration.style.rowColor
+      : stateManager.configuration.style.evenRowColor!;
 
   @override
   void initState() {
@@ -231,8 +223,7 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
       _getBoxDecoration(),
     );
 
-    setKeepAlive(stateManager.isSelecting &&
-        stateManager.currentRowIdx == widget.rowIdx);
+    setKeepAlive(stateManager.isSelecting && stateManager.currentRowIdx == widget.rowIdx);
   }
 
   Color _getDefaultRowColor() {
@@ -261,21 +252,17 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
     if (isDragTarget) {
       color = stateManager.configuration.style.cellColorInReadOnlyState;
     } else {
-      final bool checkCurrentRow = !stateManager.selectingMode.isRow &&
-          isFocusedCurrentRow &&
-          (!isSelecting && !hasCurrentSelectingPosition);
+      final bool checkCurrentRow =
+          !stateManager.selectingMode.isRow && isFocusedCurrentRow && (!isSelecting && !hasCurrentSelectingPosition);
 
-      final bool checkSelectedRow = stateManager.selectingMode.isRow &&
-          stateManager.isSelectedRow(widget.row.key);
+      final bool checkSelectedRow = stateManager.selectingMode.isRow && stateManager.isSelectedRow(widget.row.key);
 
       if (checkCurrentRow || checkSelectedRow) {
         color = stateManager.configuration.style.activatedColor;
       }
     }
 
-    return isCheckedRow
-        ? Color.alphaBlend(stateManager.configuration.style.checkedColor, color)
-        : color;
+    return isCheckedRow ? Color.alphaBlend(stateManager.configuration.style.checkedColor, color) : color;
   }
 
   BoxDecoration _getBoxDecoration() {
@@ -285,24 +272,17 @@ class _RowContainerWidgetState extends PlutoStateWithChange<_RowContainerWidget>
 
     final bool isCheckedRow = widget.row.checked == true;
 
-    final alreadyTarget = stateManager.dragRows
-            .firstWhereOrNull((element) => element.key == widget.row.key) !=
-        null;
+    final alreadyTarget = stateManager.dragRows.firstWhereOrNull((element) => element.key == widget.row.key) != null;
 
     final isDraggingRow = stateManager.isDraggingRow;
 
-    final bool isDragTarget = isDraggingRow &&
-        !alreadyTarget &&
-        stateManager.isRowIdxDragTarget(widget.rowIdx);
+    final bool isDragTarget = isDraggingRow && !alreadyTarget && stateManager.isRowIdxDragTarget(widget.rowIdx);
 
-    final bool isTopDragTarget =
-        isDraggingRow && stateManager.isRowIdxTopDragTarget(widget.rowIdx);
+    final bool isTopDragTarget = isDraggingRow && stateManager.isRowIdxTopDragTarget(widget.rowIdx);
 
-    final bool isBottomDragTarget =
-        isDraggingRow && stateManager.isRowIdxBottomDragTarget(widget.rowIdx);
+    final bool isBottomDragTarget = isDraggingRow && stateManager.isRowIdxBottomDragTarget(widget.rowIdx);
 
-    final bool hasCurrentSelectingPosition =
-        stateManager.hasCurrentSelectingPosition;
+    final bool hasCurrentSelectingPosition = stateManager.hasCurrentSelectingPosition;
 
     final bool isFocusedCurrentRow = isCurrentRow && stateManager.hasFocus;
 

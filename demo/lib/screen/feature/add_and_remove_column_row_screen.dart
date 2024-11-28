@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:faker/faker.dart';
+import 'package:faker/faker.dart' as faker;
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
 
@@ -13,12 +13,10 @@ class AddAndRemoveColumnRowScreen extends StatefulWidget {
   const AddAndRemoveColumnRowScreen({Key? key}) : super(key: key);
 
   @override
-  _AddAndRemoveColumnRowScreenState createState() =>
-      _AddAndRemoveColumnRowScreenState();
+  _AddAndRemoveColumnRowScreenState createState() => _AddAndRemoveColumnRowScreenState();
 }
 
-class _AddAndRemoveColumnRowScreenState
-    extends State<AddAndRemoveColumnRowScreen> {
+class _AddAndRemoveColumnRowScreenState extends State<AddAndRemoveColumnRowScreen> {
   final List<PlutoColumn> columns = [];
 
   final List<PlutoColumnGroup> columnGroups = [];
@@ -131,10 +129,8 @@ class _AddAndRemoveColumnRowScreenState
       topTitle: 'Add and remove column, row',
       topContents: const [
         Text('You can add or delete columns, rows.'),
-        Text(
-            'Remove selected Rows is only deleted if there is a row selected in Row mode.'),
-        Text(
-            'If you are adding a new row, you can edit the cell regardless of the readOnly of column.'),
+        Text('Remove selected Rows is only deleted if there is a row selected in Row mode.'),
+        Text('If you are adding a new row, you can edit the cell regardless of the readOnly of column.'),
       ],
       topButtons: [
         PlutoExampleButton(
@@ -177,8 +173,6 @@ class _Header extends StatefulWidget {
 }
 
 class _HeaderState extends State<_Header> {
-  final faker = Faker();
-
   int addCount = 1;
 
   int addedCount = 0;
@@ -200,7 +194,7 @@ class _HeaderState extends State<_Header> {
     for (var i = 0; i < addCount; i += 1) {
       addedColumns.add(
         PlutoColumn(
-          title: faker.food.cuisine(),
+          title: faker.Food(faker.RandomGenerator()).cuisine(),
           field: 'column${++addedCount}',
           type: PlutoColumnType.text(),
         ),
@@ -276,8 +270,7 @@ class _HeaderState extends State<_Header> {
   }
 
   void handleFiltering() {
-    widget.stateManager
-        .setShowColumnFilter(!widget.stateManager.showColumnFilter);
+    widget.stateManager.setShowColumnFilter(!widget.stateManager.showColumnFilter);
   }
 
   void setGridSelectingMode(PlutoGridSelectingMode? mode) {
@@ -304,8 +297,7 @@ class _HeaderState extends State<_Header> {
             DropdownButtonHideUnderline(
               child: DropdownButton(
                 value: addCount,
-                items:
-                    [1, 5, 10, 50, 100].map<DropdownMenuItem<int>>((int count) {
+                items: [1, 5, 10, 50, 100].map<DropdownMenuItem<int>>((int count) {
                   final color = addCount == count ? Colors.blue : null;
 
                   return DropdownMenuItem<int>(
@@ -355,8 +347,7 @@ class _HeaderState extends State<_Header> {
               child: DropdownButton(
                 value: gridSelectingMode,
                 items: PlutoGridSelectingMode.values
-                    .map<DropdownMenuItem<PlutoGridSelectingMode>>(
-                        (PlutoGridSelectingMode item) {
+                    .map<DropdownMenuItem<PlutoGridSelectingMode>>((PlutoGridSelectingMode item) {
                   final color = gridSelectingMode == item ? Colors.blue : null;
 
                   return DropdownMenuItem<PlutoGridSelectingMode>(

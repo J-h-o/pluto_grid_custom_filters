@@ -52,7 +52,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
   void initState() {
     super.initState();
 
-    cellFocus = FocusNode(onKey: _handleOnKey);
+    cellFocus = FocusNode(onKeyEvent: _handleOnKey);
 
     widget.stateManager.setTextEditingController(_textController);
 
@@ -181,7 +181,7 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
     });
   }
 
-  KeyEventResult _handleOnKey(FocusNode node, RawKeyEvent event) {
+  KeyEventResult _handleOnKey(FocusNode node, KeyEvent event) {
     var keyManager = PlutoKeyManagerEvent(
       focusNode: node,
       event: event,
@@ -191,8 +191,12 @@ mixin TextCellState<T extends TextCell> on State<T> implements TextFieldProps {
       return KeyEventResult.handled;
     }
 
-    final skip =
-        !(keyManager.isVertical || _moveHorizontal(keyManager) || keyManager.isEsc || keyManager.isTab || keyManager.isF3 || keyManager.isEnter);
+    final skip = !(keyManager.isVertical ||
+        _moveHorizontal(keyManager) ||
+        keyManager.isEsc ||
+        keyManager.isTab ||
+        keyManager.isF3 ||
+        keyManager.isEnter);
 
     // 이동 및 엔터키, 수정불가 셀의 좌우 이동을 제외한 문자열 입력 등의 키 입력은 텍스트 필드로 전파 한다.
     if (skip) {

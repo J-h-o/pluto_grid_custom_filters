@@ -1,4 +1,4 @@
-import 'package:faker/faker.dart';
+import 'package:faker/faker.dart' as faker;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
@@ -35,7 +35,7 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
 
   late PlutoGridStateManager stateManager;
 
-  Color Function(PlutoRowColorContext)? rowColorCallback;
+  PlutoRowColorCallback? rowColorCallback;
 
   PlutoRowGroupDelegate? rowGroupDelegate;
 
@@ -95,9 +95,9 @@ class _DevelopmentScreenState extends State<DevelopmentScreen> {
     ),
     // localeText: const PlutoGridLocaleText.korean(),
     columnFilter: PlutoGridColumnFilterConfig(
-      filters: const [
+      filters: [
         ...FilterHelper.defaultFilters,
-        ClassYouImplemented(),
+        const ClassYouImplemented(),
       ],
       resolveDefaultColumnFilter: (column, resolver) {
         if (column.field == 'column3') {
@@ -436,7 +436,7 @@ class _HeaderState extends State<_Header> {
       0,
       [
         PlutoColumn(
-          title: faker.food.cuisine(),
+          title: faker.Food(faker.RandomGenerator()).cuisine(),
           field: 'new_${DateTime.now()}',
           type: PlutoColumnType.text(),
           frozen: frozen,
@@ -999,11 +999,11 @@ final testColumnsA = [
       Color textColor = Colors.black;
 
       if (rendererContext.cell.value == 'red') {
-        textColor = Colors.red;
+        textColor = Colors.red as Color;
       } else if (rendererContext.cell.value == 'blue') {
-        textColor = Colors.blue;
+        textColor = Colors.blue as Color;
       } else if (rendererContext.cell.value == 'green') {
-        textColor = Colors.green;
+        textColor = Colors.green as Color;
       }
 
       return Text(

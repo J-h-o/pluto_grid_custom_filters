@@ -100,8 +100,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: PlutoGridExampleColors.primaryColor,
         fontFamily: 'OpenSans',
-        backgroundColor: PlutoGridExampleColors.backgroundColor,
         scaffoldBackgroundColor: PlutoGridExampleColors.backgroundColor,
+        colorScheme: const ColorScheme(
+          brightness: Brightness.light,
+          primary: PlutoGridExampleColors.primaryColor,
+          onPrimary: Colors.white,
+          secondary: PlutoGridExampleColors.backgroundColor,
+          onSecondary: Colors.white,
+          error: Colors.red,
+          onError: Colors.white,
+          surface: PlutoGridExampleColors.backgroundColor,
+          onSurface: Colors.black,
+        ),
       ),
     );
   }

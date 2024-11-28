@@ -64,8 +64,9 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
         borderRadius: BorderRadius.zero,
       );
 
-  Color get _textFieldColor =>
-      _enabled ? stateManager.configuration.style.cellColorInEditState : stateManager.configuration.style.cellColorInReadOnlyState;
+  Color get _textFieldColor => _enabled
+      ? stateManager.configuration.style.cellColorInEditState
+      : stateManager.configuration.style.cellColorInReadOnlyState;
 
   EdgeInsets get _padding => widget.column.filterPadding ?? stateManager.configuration.style.defaultColumnFilterPadding;
 
@@ -76,7 +77,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
   initState() {
     super.initState();
 
-    _focusNode = FocusNode(onKey: _handleOnKey);
+    _focusNode = FocusNode(onKeyEvent: _handleOnKey);
 
     widget.column.setFilterFocusNode(_focusNode);
 
@@ -138,7 +139,7 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
     stateManager.notifyListeners();
   }
 
-  KeyEventResult _handleOnKey(FocusNode node, RawKeyEvent event) {
+  KeyEventResult _handleOnKey(FocusNode node, KeyEvent event) {
     var keyManager = PlutoKeyManagerEvent(
       focusNode: node,
       event: event,
@@ -148,7 +149,8 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
       return KeyEventResult.handled;
     }
 
-    final handleMoveDown = (keyManager.isDown || keyManager.isEnter || keyManager.isEsc) && stateManager.refRows.isNotEmpty;
+    final handleMoveDown =
+        (keyManager.isDown || keyManager.isEnter || keyManager.isEsc) && stateManager.refRows.isNotEmpty;
 
     final handleMoveHorizontal = keyManager.isTab || (_controller.text.isEmpty && keyManager.isHorizontal);
 
@@ -191,8 +193,9 @@ class PlutoColumnFilterState extends PlutoStateWithChange<PlutoColumnFilter> {
     }
 
     if (plutoEvent is PlutoGridCannotMoveCurrentCellEvent && plutoEvent.direction.isUp) {
-      var isCurrentColumn =
-          widget.stateManager.refColumns[stateManager.columnIndexesByShowFrozen[plutoEvent.cellPosition.columnIdx!]].key == widget.column.key;
+      var isCurrentColumn = widget.stateManager
+              .refColumns[stateManager.columnIndexesByShowFrozen[plutoEvent.cellPosition.columnIdx!]].key ==
+          widget.column.key;
 
       if (isCurrentColumn) {
         stateManager.clearCurrentCell(notify: false);
